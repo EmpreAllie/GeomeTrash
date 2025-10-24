@@ -89,6 +89,18 @@ public class UIManager : MonoBehaviour
 
 
 
+    public void OnCLickQuitGame()
+    {
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+
+        Debug.Log("Quit Game");
+    }
+
+
 
 
     // Update is called once per frame
