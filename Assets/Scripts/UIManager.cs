@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -43,8 +44,15 @@ public class UIManager : MonoBehaviour
 
     public void OnClickLoadLevel(int levelIndex) 
     {
-        Debug.Log($"Загрузка уровня {levelIndex}");
-        // SceneManager.LoadScene(levelOne);
+        
+        if (SceneManager.GetSceneByBuildIndex(levelIndex).IsValid())
+        {
+            SceneManager.LoadScene(levelIndex);
+        }
+        else
+        {
+            Debug.LogError($"Сцена с индексом {levelIndex} не найдена или не добавлена в Build Settings!");
+        }
     }
 
     public void OnClickBackToMenu()
