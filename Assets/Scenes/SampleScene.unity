@@ -561,8 +561,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb1eed954f44f3a4783621eb1746985b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  forwardSpeed: 10
-  jumpForce: 500
+  forwardSpeed: 9
+  jumpForce: 8
 --- !u!1 &294495658
 GameObject:
   m_ObjectHideFlags: 0
@@ -577,7 +577,7 @@ GameObject:
   - component: {fileID: 294495659}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -761,13 +761,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
-  m_LocalPosition: {x: 0, y: 3, z: -5}
+  m_LocalRotation: {x: 0.12059043, y: -0.37940952, z: 0.04995019, w: 0.9159757}
+  m_LocalPosition: {x: 7, y: 3, z: -10}
   m_LocalScale: {x: 0.6833916, y: 0.6833916, z: 0.6833916}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 147668198}
-  m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 15, y: -45, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1757,7 +1757,7 @@ GameObject:
   - component: {fileID: 778556776}
   m_Layer: 0
   m_Name: Cone (3)
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3608,7 +3608,7 @@ Transform:
   m_GameObject: {fileID: 778556775}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.67, y: 0.72, z: -231.49}
+  m_LocalPosition: {x: -6.67, y: 0.72, z: -234.56001}
   m_LocalScale: {x: 1.3712, y: 2.0175653, z: 2.4526653}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3946,7 +3946,7 @@ Transform:
   m_GameObject: {fileID: 928727531}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.67, y: 2.13, z: -219.01}
+  m_LocalPosition: {x: -6.67, y: 2.15, z: -219.01}
   m_LocalScale: {x: 1.46329, y: 1.46329, z: 1.46329}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4079,7 +4079,7 @@ GameObject:
   - component: {fileID: 1399990288}
   m_Layer: 0
   m_Name: Cone (7)
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5930,7 +5930,7 @@ Transform:
   m_GameObject: {fileID: 1399990287}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.67, y: 0.72, z: -229.76}
+  m_LocalPosition: {x: -6.67, y: 0.72, z: -232.83}
   m_LocalScale: {x: 1.3712, y: 2.0175653, z: 2.4526653}
   m_ConstrainProportionsScale: 0
   m_Children: []

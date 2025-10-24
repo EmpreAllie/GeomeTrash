@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public float forwardSpeed = 10f;
-    public float jumpForce = 500f;
+    public float jumpForce = 5f;
     private bool isGrounded;
     private Rigidbody rb;
     private Vector3 forwardDirection;
@@ -29,8 +29,9 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        bool jumpKeyHeld = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
         // 2. Логика прыжка
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (jumpKeyHeld && isGrounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
@@ -40,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         // 3. Проверка земли и препятствий
-        if (collision.gameObject.CompareTag("Obstacle"))
+        if (collision.gameObject.CompareTag("Spike"))
         {
             Debug.Log("Game Over!");
             // ... (логика перезапуска уровня или смерти)
