@@ -12,6 +12,8 @@ public class PauseManager : MonoBehaviour
         
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
@@ -42,9 +44,15 @@ public class PauseManager : MonoBehaviour
         isPaused = true;
     }
 
+
+
+
     public void QuitToMenu()
     {
         Time.timeScale = 1f;
+
+        UIManager.ShouldShowLevelSelectStatic = true;
+
         SceneManager.LoadScene("MenuScene");
     }
 }

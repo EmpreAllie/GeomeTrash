@@ -3,19 +3,33 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
-
     public GameObject panelMainMenu;
     public GameObject panelSelectLevel;
     public GameObject panelFAQ;
     public GameObject panelSettings;
 
-    public string levelOneSceneName = "LevelScene_01";
+    private GameObject currentActivePanel;
+
+    public static bool ShouldShowLevelSelectStatic = false;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        ShowPanel(panelMainMenu);
+        if (ShouldShowLevelSelectStatic)
+        {
+            ShowPanel(panelSelectLevel);
+
+            ShouldShowLevelSelectStatic = false;
+        }
+        else
+        {
+            ShowPanel(panelMainMenu);
+        }
     }
+
+
+
 
     public void ShowPanel(GameObject panelToShow) 
     { 
@@ -25,35 +39,48 @@ public class UIManager : MonoBehaviour
         panelSettings.SetActive(false);
 
         panelToShow.SetActive(true);
+        currentActivePanel = panelToShow;
     }
+
+
 
     public void OnClickStartGame()
     {
         ShowPanel(panelSelectLevel);
     }
 
+
+
     public void OnClickOpenFAQ()
     {
         ShowPanel(panelFAQ);
     }
+
+
 
     public void OnClickOpenSettings()
     {
         ShowPanel(panelSettings);
     }
 
+
+
+
     public void OnClickLoadLevel(int levelIndex) 
     {
+        string sceneToLoad = "";
+
+        if (levelIndex == 1)
+        {
+            sceneToLoad = "StereoSadness";
+        }
+
+        SceneManager.LoadScene(sceneToLoad);
         
-        if (SceneManager.GetSceneByBuildIndex(levelIndex).IsValid())
-        {
-            SceneManager.LoadScene(levelIndex);
-        }
-        else
-        {
-            Debug.LogError($"—цена с индексом {levelIndex} не найдена или не добавлена в Build Settings!");
-        }
     }
+
+
+
 
     public void OnClickBackToMenu()
     {
@@ -62,9 +89,17 @@ public class UIManager : MonoBehaviour
 
 
 
+
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (currentActivePanel != panelMainMenu)
+            {
+                OnClickBackToMenu();
+            }
+        }
     }
 }
