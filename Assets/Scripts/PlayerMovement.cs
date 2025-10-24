@@ -40,15 +40,17 @@ public class PlayerMovement : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        // 3. Проверка земли и препятствий
-        if (collision.gameObject.CompareTag("Spike"))
+        GameObject other = collision.gameObject;
+
+        if (other.CompareTag("Spike"))
         {
             Debug.Log("Game Over!");
             // ... (логика перезапуска уровня или смерти)
         }
-        else if (collision.gameObject.CompareTag("Ground"))
+        else if (other.CompareTag("Ground") ||
+                 other.CompareTag("Block"))
         {
             isGrounded = true;
-        }
+        }       
     }
 }
