@@ -47,7 +47,7 @@ public class PauseManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        
+        AttemptManager.IncreaseAttemptCount();   
         isPaused = false;
 
         Scene curScene = SceneManager.GetActiveScene();
@@ -61,7 +61,7 @@ public class PauseManager : MonoBehaviour
     public void QuitToMenu()
     {
         Time.timeScale = 1f;
-
+        AttemptManager.ResetAttempts();
         UIManager.ShouldShowLevelSelectStatic = true;
 
         SceneManager.LoadScene("MenuScene");

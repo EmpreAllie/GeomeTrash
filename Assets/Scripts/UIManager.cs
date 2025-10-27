@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     public GameObject panelSettings;
 
     private GameObject currentActivePanel;
+    public GameObject panelHUD;
 
     public static bool ShouldShowLevelSelectStatic = false;
 

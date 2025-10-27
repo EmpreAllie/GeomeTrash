@@ -33,9 +33,9 @@ public class LevelManager : MonoBehaviour
             playerCube.gameObject.SetActive(false);
 
 
-        Debug.Log("Спавним эффект смерти в позиции: " + deathPos);
+        //Debug.Log("Спавним эффект смерти в позиции: " + deathPos);
         GameObject effect = Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);
-        Debug.Log("Эффект создан: " + effect.name + " | позиция: " + effect.transform.position);
+        //Debug.Log("Эффект создан: " + effect.name + " | позиция: " + effect.transform.position);
 
         Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);
 
@@ -46,6 +46,8 @@ public class LevelManager : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
             rb.isKinematic = true;
         }
+
+        AttemptManager.IncreaseAttemptCount();
 
         // даём частицам проиграться 1 секунду перед перезапуском
         yield return new WaitForSeconds(1f);
