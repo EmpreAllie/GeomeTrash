@@ -4,12 +4,6 @@ using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
     public float forwardSpeed = 10f;
     public float jumpForce = 5f;
     private bool isGrounded;
@@ -24,20 +18,32 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Game Over")]
     public GameObject deathEffectPrefab;
+    public LevelManager levelManager;
 
 
     void Awake()
     {
         cubeToRotate = transform.Find("PlayerCube");
+        levelManager = FindAnyObjectByType<LevelManager>();
 
-        if (cubeToRotate == null)
+        if (levelManager == null)
         {
-            Debug.LogError("PlayerCube not found as a child of the player object.");
+            Debug.LogError("LevelManager is NULL");
         }
 
         rb = GetComponent<Rigidbody>();
         forwardDirection = Vector3.forward;
     }
+
+
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+
 
     void FixedUpdate()
     {
@@ -73,24 +79,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    private void Die()
-    {
-        Time.timeScale = 0f;
-        Vector3 effectPosition = cubeToRotate.position;
-
-        Instantiate(deathEffectPrefab, effectPosition, Quaternion.identity);
-
-        StartCoroutine(RestartLevelAfterDelay(1f));
-
-        gameObject.SetActive(false);        
-    }
-
-    private IEnumerator RestartLevelAfterDelay(float delay)
-    {
-        yield return new WaitForSecondsRealtime(delay);
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+    
 
 
     void OnCollisionEnter(Collision collision)
@@ -102,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("Game Over!");
             // ... (логика перезапуска уровня или смерти)
 
-            Die();
+            levelManager.PlayerDied(gameObject, cubeToRotate.position, deathEffectPrefab);
         }
         else if (other.CompareTag("Ground") ||
                  other.CompareTag("Block"))
