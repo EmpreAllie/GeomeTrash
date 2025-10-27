@@ -44,6 +44,17 @@ public class PauseManager : MonoBehaviour
         isPaused = true;
     }
 
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        
+        isPaused = false;
+
+        Scene curScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(curScene.name);
+        pausePanel.SetActive(false);
+    }
+
 
 
 

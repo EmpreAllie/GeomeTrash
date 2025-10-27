@@ -26,11 +26,6 @@ public class PlayerMovement : MonoBehaviour
         cubeToRotate = transform.Find("PlayerCube");
         levelManager = FindAnyObjectByType<LevelManager>();
 
-        if (levelManager == null)
-        {
-            Debug.LogError("LevelManager is NULL");
-        }
-
         rb = GetComponent<Rigidbody>();
         forwardDirection = Vector3.forward;
     }
