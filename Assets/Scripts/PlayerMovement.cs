@@ -88,8 +88,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.CompareTag("Spike"))
         {
-            Debug.Log("Game Over!");
-            // ... (логика перезапуска уровня или смерти)
+            Debug.Log($"Смерть игрока! Pos: {cubeToRotate.position}");            
 
             levelManager.PlayerDied(gameObject, cubeToRotate.position, deathEffectPrefab);
         }
