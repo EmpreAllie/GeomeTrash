@@ -9,8 +9,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private Rigidbody rb;
     private Vector3 forwardDirection;
-
-
     private Transform cubeToRotate;
 
     [Header("Rotation Settings")]
@@ -18,13 +16,27 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Game Over")]
     public GameObject deathEffectPrefab;
-    public LevelManager levelManager;
 
 
-    void Awake()
+    public static PlayerMovement Instance;
+    public bool IgnoreInputForOneFrame = false;
+
+    public AudioSource levelMusic;
+
+
+    private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         cubeToRotate = transform.Find("PlayerCube");
-        levelManager = FindAnyObjectByType<LevelManager>();
 
         rb = GetComponent<Rigidbody>();
         forwardDirection = Vector3.forward;
@@ -50,6 +62,13 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (IgnoreInputForOneFrame)
+        {
+            // Сразу сбрасываем флаг и выходим из текущего кадра
+            IgnoreInputForOneFrame = false;
+            return;
+        }
+
         bool jumpKeyHeld = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
 
         // логика прыжка
@@ -74,9 +93,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    
-
-
     void OnCollisionEnter(Collision collision)
     {
         GameObject other = collision.gameObject;
@@ -85,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log($"Смерть игрока! Pos: {cubeToRotate.position}");            
 
-            levelManager.PlayerDied(gameObject, cubeToRotate.position, deathEffectPrefab);
+            LevelManager.Instance.PlayerDied(gameObject, cubeToRotate.position, deathEffectPrefab);
         }
         else if (other.CompareTag("Ground") ||
                  other.CompareTag("Block"))

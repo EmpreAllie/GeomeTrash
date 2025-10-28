@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -32,13 +33,20 @@ public class PauseManager : MonoBehaviour
 
     public void ResumeGame()
     {
-        pausePanel.SetActive(false);
+        LevelManager.Instance.UnpauseMusic();
+        pausePanel.SetActive(false);        
+
+        StartCoroutine(IgnoreNextJump());
         Time.timeScale = 1f;
+
+        LevelManager.Instance.UnpauseMusic();
+
         isPaused = false;
     }
 
     public void PauseGame()
     {
+        LevelManager.Instance.PauseMusic();
         pausePanel.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
@@ -65,5 +73,12 @@ public class PauseManager : MonoBehaviour
         UIManager.ShouldShowLevelSelectStatic = true;
 
         SceneManager.LoadScene("MenuScene");
+    }
+
+
+    private IEnumerator IgnoreNextJump()
+    {
+        PlayerMovement.Instance.IgnoreInputForOneFrame = true;
+        yield return null;
     }
 }

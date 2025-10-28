@@ -4,6 +4,23 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
+    public static LevelManager Instance;
+
+    public AudioSource levelMusic;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -16,9 +33,30 @@ public class LevelManager : MonoBehaviour
         
     }
 
+    public void PauseMusic()
+    {
+        if (levelMusic != null && levelMusic.isPlaying)
+        {
+            levelMusic.Pause();
+        }
+    }
+
+    public void UnpauseMusic()
+    {
+        if (levelMusic != null && !levelMusic.isPlaying)
+        {
+            levelMusic.UnPause();
+        }
+    }
+
 
     public void PlayerDied(GameObject playerObject, Vector3 deathPos, GameObject deathEffectPrefab)
     {
+        if (levelMusic != null && levelMusic.isPlaying)
+        {
+            levelMusic.Stop();
+        }
+
         StartCoroutine(PlayerDeathRoutine(playerObject, deathPos, deathEffectPrefab));
     }
 
