@@ -59,20 +59,13 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    // Update is called once per frame
+    // Update вызывается каждый кадр
     void Update()
     {
-        if (IgnoreInputForOneFrame)
-        {
-            // Сразу сбрасываем флаг и выходим из текущего кадра
-            IgnoreInputForOneFrame = false;
-            return;
-        }
-
         bool jumpKeyHeld = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Mouse0);
 
         // логика прыжка
-        if (jumpKeyHeld && isGrounded)
+        if (jumpKeyHeld && isGrounded && !PauseManager.Instance.getIsPaused())
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;            

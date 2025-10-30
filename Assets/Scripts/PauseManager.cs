@@ -4,8 +4,24 @@ using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
+    public static PauseManager Instance;
+
     public GameObject pausePanel;
     private bool isPaused = false;
+    public bool getIsPaused() { return isPaused; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -31,18 +47,16 @@ public class PauseManager : MonoBehaviour
         }
     }
 
+
     public void ResumeGame()
     {
         LevelManager.Instance.UnpauseMusic();
         pausePanel.SetActive(false);        
-
-        StartCoroutine(IgnoreNextJump());
-        Time.timeScale = 1f;
-
         LevelManager.Instance.UnpauseMusic();
-
+        Time.timeScale = 1f;
         isPaused = false;
     }
+
 
     public void PauseGame()
     {
@@ -73,12 +87,5 @@ public class PauseManager : MonoBehaviour
         UIManager.ShouldShowLevelSelectStatic = true;
 
         SceneManager.LoadScene("MenuScene");
-    }
-
-
-    private IEnumerator IgnoreNextJump()
-    {
-        PlayerMovement.Instance.IgnoreInputForOneFrame = true;
-        yield return null;
     }
 }
