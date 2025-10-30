@@ -90,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GameObject other = collision.gameObject;
 
-        if (other.CompareTag("Spike"))
+        if (other.CompareTag("Spike") || other.CompareTag("SpikeLow"))
         {
             Debug.Log($"Смерть игрока! Pos: {cubeToRotate.position}");            
 

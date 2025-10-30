@@ -7,6 +7,7 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance;
 
     public AudioSource levelMusic;
+    public AudioClip deathSoundClip;
 
     private void Awake()
     {
@@ -71,17 +72,24 @@ public class LevelManager : MonoBehaviour
             playerCube.gameObject.SetActive(false);
 
 
-        //Debug.Log("Спавним эффект смерти в позиции: " + deathPos);
-        GameObject effect = Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);
-        //Debug.Log("Эффект создан: " + effect.name + " | позиция: " + effect.transform.position);
+        //Спавним эффект смерти в позиции: deathPos
+        GameObject effect = Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);        
 
         Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);
+
+        if (deathSoundClip != null)
+        {
+            AudioSource.PlayClipAtPoint(deathSoundClip, deathPos);
+        }
 
         Rigidbody rb = playerObject.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
+            if (!rb.isKinematic)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }            
             rb.isKinematic = true;
         }
 
