@@ -8,6 +8,7 @@ TagManager:
   - Spike
   - Block
   - SpikeLow
+  - PlayerCube
   layers:
   - Default
   - TransparentFX

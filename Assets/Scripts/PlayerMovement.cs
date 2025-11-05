@@ -86,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    // метод реагирования на столкновение
     void OnCollisionEnter(Collision collision)
     {
         GameObject other = collision.gameObject;
@@ -99,11 +100,34 @@ public class PlayerMovement : MonoBehaviour
         else if (other.CompareTag("Ground") ||
                  other.CompareTag("Block"))
         {
-            if (!isGrounded)
+            ContactPoint contact = collision.contacts[0];
+            Vector3 normal = contact.normal;
+
+            if (Vector3.Dot(normal, Vector3.up) > 0.5f)
             {
-                isGrounded = true;
-                SnapRotation();
-            }            
+                if (!isGrounded)
+                {
+                    isGrounded = true;
+                    SnapRotation();
+                }
+
+            }
+            else
+            {
+                Debug.Log($"Player death caused by block's side collision");
+                LevelManager.Instance.PlayerDied(gameObject, cubeToRotate.position, deathEffectPrefab);
+            }
+
         }       
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Finish"))
+        {
+            Debug.Log("Level completed");
+            LevelManager.Instance.LevelCompleted();
+        }
     }
 }

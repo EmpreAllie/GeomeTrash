@@ -9,6 +9,8 @@ public class LevelManager : MonoBehaviour
     public AudioSource levelMusic;
     public AudioClip deathSoundClip;
 
+    public GameObject levelCompleteUI;
+
     private void Awake()
     {
         if (Instance == null)
@@ -75,7 +77,7 @@ public class LevelManager : MonoBehaviour
         //Спавним эффект смерти в позиции: deathPos
         GameObject effect = Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);        
 
-        Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);
+       // Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);
 
         if (deathSoundClip != null)
         {
@@ -99,5 +101,24 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+
+    public void LevelCompleted()
+    {
+        if (levelMusic != null && levelMusic.isPlaying)
+        {
+            levelMusic.Stop();
+        }
+
+        Time.timeScale = 0f;
+
+        var player = GameObject.FindGameObjectWithTag("PlayerCube");
+        player.GetComponent<PlayerMovement>().enabled = false;
+
+        if (levelCompleteUI != null)
+        {
+            levelCompleteUI.SetActive(true);
+        }
     }
 }
