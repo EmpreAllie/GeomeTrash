@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 public enum PlayerMode
 {
     CUBE,
-    SHIP
+    SHIP,
+    BALL
 }
 
 public class PlayerMovement : MonoBehaviour
@@ -16,29 +17,42 @@ public class PlayerMovement : MonoBehaviour
     public float forwardSpeed = 10f;
     public float jumpForce = 5f;
     private bool isGrounded;
-    private Rigidbody rb;
+    
     private Vector3 forwardDirection;
     private Transform cubeToRotate;
+
 
     [Header("Rotation Settings")]
     public float rotationSpeed = 500f;
 
+
     [Header("Game Over")]
     public GameObject deathEffectPrefab;
+
 
     [Header("Ship Settings")]
     public GameObject shipPrefab;
     public float tiltFactor = 5f;     // множитель скорости -> угол
     public float maxTiltAngle = 30f;  // макс угол (в градусах)
     public float tiltLerpSpeed = 5f;  // скорость интерполяции
-    public Transform visualModel;
 
+    [Header("Ball Settings")]
+    public GameObject ballPrefab;
+    private Vector3 gravityDirection = Vector3.down;
 
+    private Transform visualModel;
+    private GameObject playerCube;
+
+    [Header("Other Settings")]
+    public GameObject currentModel;
+    private Rigidbody rb;
 
     public AudioSource levelMusic;
 
     private PlayerMode currentMode = PlayerMode.CUBE;
-    public GameObject currentModel;
+
+
+    
 
 
     void Awake()
@@ -52,12 +66,6 @@ public class PlayerMovement : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        cubeToRotate = transform.Find("PlayerCube");
-        currentModel = cubeToRotate.gameObject;
-
-        rb = GetComponent<Rigidbody>();
-        forwardDirection = Vector3.forward;        
     }
 
 
@@ -65,6 +73,15 @@ public class PlayerMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        cubeToRotate = transform.Find("PlayerCube");
+
+        playerCube = transform.Find("PlayerCube").gameObject;
+        currentModel = playerCube;
+        visualModel = playerCube.transform;
+
+        rb = GetComponent<Rigidbody>();
+        forwardDirection = Vector3.forward;
+
         AlignColliderWithChild();
     }
 
@@ -100,13 +117,26 @@ public class PlayerMovement : MonoBehaviour
                 cubeToRotate.Rotate(Vector3.right, rotationSpeed * Time.deltaTime, Space.Self);
             }
         }
-        if (currentMode == PlayerMode.SHIP)
+        else if (currentMode == PlayerMode.SHIP)
         {
             float verticalForce = jumpKeyHeld ? 1f : -1f;
             rb.AddForce(Vector3.up * verticalForce * jumpForce * 0.5f, ForceMode.Acceleration);
 
             UpdateShipTilt();
+        }
+        else if (currentMode == PlayerMode.BALL)
+        {
+            if (jumpKeyHeld)
+            {
+                gravityDirection = (gravityDirection == Vector3.down) ? Vector3.up : Vector3.down;
+                transform.Rotate(0f, 0f, 180f);
+            }
 
+            rb.AddForce(gravityDirection * 20f, ForceMode.Acceleration);
+
+            // Вращение модели по оси движения
+            float roll = rb.linearVelocity.x * 5f;
+            currentModel.transform.Rotate(Vector3.forward * -roll * Time.deltaTime);
         }
     }
 
@@ -168,28 +198,68 @@ public class PlayerMovement : MonoBehaviour
 
             currentMode = PlayerMode.SHIP;
             SwitchToShipMode();
-            rb.useGravity = false;
-            isGrounded = false;
+            
         }
         else if (other.CompareTag("CubePortal"))
         {
             Debug.Log("Entered Cube Portal");
             currentMode = PlayerMode.CUBE;
-            rb.useGravity = true;
+            SwitchToCubeMode();            
         }
+        else if (other.CompareTag("BallPortal"))
+        {
+            Debug.Log("Entered Ball Portal");
+            currentMode = PlayerMode.BALL;
+            SwitchToBallMode();
+
+        }
+    }
+
+    private void SwitchToCubeMode()
+    {
+        if (currentModel != null)
+            Destroy(currentModel);
+        
+        playerCube.SetActive(true);
+        currentModel = playerCube;
+        visualModel = playerCube.transform;
+
+        rb.useGravity = true;
+        AlignColliderWithChild();
     }
 
     private void SwitchToShipMode()
     {
         if (shipPrefab == null) return;
-
+        /*
         if (currentModel != null)
             currentModel.SetActive(false);
-        
+        */
+        playerCube.SetActive(false);
+
         currentModel = Instantiate(shipPrefab, currentModel.transform.position, transform.rotation, transform);
         currentModel.SetActive(true);
         visualModel = currentModel.transform;
 
+        rb.useGravity = false;
+        isGrounded = false;
+
+        AlignColliderWithChild();
+    }
+
+    private void SwitchToBallMode()
+    {
+        if (ballPrefab == null) return;
+
+        if (currentModel != null)
+            currentModel.SetActive(false);
+
+        currentModel = Instantiate(ballPrefab, currentModel.transform.position, transform.rotation, transform);
+        currentModel.SetActive(true);
+        visualModel = currentModel.transform;
+
+        rb.useGravity = false; // отключаем стандартную гравитацию
+        gravityDirection = Vector3.down;
         AlignColliderWithChild();
     }
 
@@ -237,5 +307,6 @@ public class PlayerMovement : MonoBehaviour
         // отладка 
         // Debug.Log($"velY={verticalVelocity:F2} target={targetAngle:F1} curZ={currentZ:F1} newZ={newZ:F1}");
     }
+
 }
 

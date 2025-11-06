@@ -10,6 +10,8 @@ TagManager:
   - SpikeLow
   - PlayerCube
   - ShipPortal
+  - CubePortal
+  - BallPortal
   layers:
   - Default
   - TransparentFX
