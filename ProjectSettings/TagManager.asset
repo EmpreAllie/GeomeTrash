@@ -9,6 +9,7 @@ TagManager:
   - Block
   - SpikeLow
   - PlayerCube
+  - ShipPortal
   layers:
   - Default
   - TransparentFX

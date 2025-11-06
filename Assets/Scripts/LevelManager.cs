@@ -65,6 +65,12 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator PlayerDeathRoutine(GameObject playerObject, Vector3 deathPos, GameObject deathEffectPrefab)
     {
+        PlayerMovement pm = playerObject.GetComponent<PlayerMovement>();
+        if (pm != null && pm.currentModel != null)
+        {
+            pm.currentModel.SetActive(false);
+        }
+
         Transform cameraHolder = playerObject.transform.Find("CameraHolder");
         if (cameraHolder != null)
             cameraHolder.SetParent(this.transform);
@@ -75,14 +81,11 @@ public class LevelManager : MonoBehaviour
 
 
         //Спавним эффект смерти в позиции: deathPos
-        GameObject effect = Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);        
-
-       // Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);
+        if (deathEffectPrefab != null)
+            Instantiate(deathEffectPrefab, deathPos, Quaternion.identity);        
 
         if (deathSoundClip != null)
-        {
             AudioSource.PlayClipAtPoint(deathSoundClip, deathPos);
-        }
 
         Rigidbody rb = playerObject.GetComponent<Rigidbody>();
         if (rb != null)
