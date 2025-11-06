@@ -64,7 +64,7 @@ public class LevelManager : MonoBehaviour
     }
 
     private IEnumerator PlayerDeathRoutine(GameObject playerObject, Vector3 deathPos, GameObject deathEffectPrefab)
-    {
+    {        
         PlayerMovement pm = playerObject.GetComponent<PlayerMovement>();
         if (pm != null && pm.currentModel != null)
         {

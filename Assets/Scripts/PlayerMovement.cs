@@ -37,8 +37,15 @@ public class PlayerMovement : MonoBehaviour
     public float tiltLerpSpeed = 5f;  // скорость интерполяции
 
     [Header("Ball Settings")]
-    public GameObject ballPrefab;
+    public GameObject ballPrefab;           // префаб сферы
+    public float ballGravityForce = 20f;    // сила "искусственной" гравитации
+    public float ballStickThreshold = 0.7f; // dot нормали для прилипания
+    public float ballRollFactor = 5f;       // множитель для визуального кручения
+
     private Vector3 gravityDirection = Vector3.down;
+    private bool gravityInverted = false;
+    private bool ballJustToggled = false;   // защита от многократных переключений в кадр
+
 
     private Transform visualModel;
     private GameObject playerCube;
@@ -91,6 +98,12 @@ public class PlayerMovement : MonoBehaviour
     {
         // автоматическое движение вперёд
         transform.position += forwardDirection * forwardSpeed * Time.fixedDeltaTime;
+
+        // гравитация для Ball: используем AddForce в FixedUpdate
+        if (currentMode == PlayerMode.BALL)
+        {
+            rb.AddForce(gravityDirection * ballGravityForce, ForceMode.Acceleration);
+        }
     }
 
 
@@ -126,17 +139,9 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (currentMode == PlayerMode.BALL)
         {
-            if (jumpKeyHeld)
-            {
-                gravityDirection = (gravityDirection == Vector3.down) ? Vector3.up : Vector3.down;
-                transform.Rotate(0f, 0f, 180f);
-            }
-
-            rb.AddForce(gravityDirection * 20f, ForceMode.Acceleration);
-
-            // Вращение модели по оси движения
-            float roll = rb.linearVelocity.x * 5f;
-            currentModel.transform.Rotate(Vector3.forward * -roll * Time.deltaTime);
+            HandleBallInput();   // переключение гравитации по нажатию
+                                 // применяем "гравитацию" в FixedUpdate, чтобы физика велась предсказуемо
+            UpdateBallVisuals(); // визуальное кручение
         }
     }
 
@@ -147,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
         cubeToRotate.localRotation = Quaternion.Euler(snappedX, 0f, 0f);
     }
 
-
+    /*
     // метод реагирования на столкновение
     void OnCollisionEnter(Collision collision)
     {
@@ -182,7 +187,61 @@ public class PlayerMovement : MonoBehaviour
 
         }       
     }
+    */
 
+    void OnCollisionEnter(Collision collision)
+    {
+        HandleCollision(collision);
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        HandleCollision(collision);
+    }
+
+    private void HandleCollision(Collision collision)
+    {
+        GameObject other = collision.gameObject;
+
+        if (other.CompareTag("Spike") || other.CompareTag("SpikeLow"))
+        {
+            LevelManager.Instance.PlayerDied(gameObject, transform.position, deathEffectPrefab);
+            return;
+        }
+
+        if (other.CompareTag("Ground") || other.CompareTag("Block"))
+        {
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                Vector3 normal = contact.normal;
+
+                // если гравитация вниз — надо иметь нормаль вверх, чтобы считалось полом
+                // если гравитация вверх — нужно нормаль вниз (т.е. Vector3.Dot(normal, Vector3.down) близко к 1)
+                if (!gravityInverted)
+                {
+                    if (Vector3.Dot(normal, Vector3.up) > ballStickThreshold)
+                    {
+                        // стоим на полу
+                        isGrounded = true;
+                        // зануляем вертикальную скорость, чтобы "прилипнуть"
+                        Vector3 v = rb.linearVelocity; v.y = 0f; rb.linearVelocity = v;
+                        // немного смещаем игрока на контактную точку, чтобы избежать просеков
+                        transform.position += normal * 0.01f;
+                    }
+                }
+                else
+                {
+                    if (Vector3.Dot(normal, Vector3.down) > ballStickThreshold)
+                    {
+                        // стоим на потолке (прилипли)
+                        isGrounded = true;
+                        Vector3 v = rb.linearVelocity; v.y = 0f; rb.linearVelocity = v;
+                        transform.position += normal * 0.01f;
+                    }
+                }
+            }
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -197,21 +256,21 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("Entered Ship Portal");
 
             currentMode = PlayerMode.SHIP;
-            SwitchToShipMode();
-            
+            SwitchToShipMode();            
         }
         else if (other.CompareTag("CubePortal"))
         {
             Debug.Log("Entered Cube Portal");
+
             currentMode = PlayerMode.CUBE;
             SwitchToCubeMode();            
         }
         else if (other.CompareTag("BallPortal"))
         {
             Debug.Log("Entered Ball Portal");
+
             currentMode = PlayerMode.BALL;
             SwitchToBallMode();
-
         }
     }
 
@@ -308,5 +367,39 @@ public class PlayerMovement : MonoBehaviour
         // Debug.Log($"velY={verticalVelocity:F2} target={targetAngle:F1} curZ={currentZ:F1} newZ={newZ:F1}");
     }
 
+
+    private void HandleBallInput()
+    {
+        // переключаем гравитацию только при нажатии (один тик) — GetKeyDown
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            gravityInverted = !gravityInverted;
+            gravityDirection = gravityInverted ? Vector3.up : Vector3.down;
+
+            // обнуляем вертикальную скорость при переключении,
+            // чтобы избежать сильных проходов через геометрию
+            Vector3 v = rb.linearVelocity;
+            v.y = 0f;
+            rb.linearVelocity = v;
+
+            // повернуть визуальную модель на 180 по X/Z чтобы она выглядела "перевернутой"
+            if (visualModel != null)
+                visualModel.localRotation = Quaternion.Euler(180f, 0f, 0f) * Quaternion.identity; // или плавно анимируй
+        }
+    }
+
+    private void UpdateBallVisuals()
+    {
+        if (currentModel == null || rb == null) return;
+
+        // Предполагаем, что шар движется вдоль оси Z
+        float forwardSpeed = rb.linearVelocity.z;
+
+        // чем быстрее катится — тем быстрее вращается
+        float rollAmount = forwardSpeed * ballRollFactor;
+
+        // вращаем визуальную модель вокруг оси X (катится вперёд)
+        visualModel.Rotate(Vector3.right * rollAmount * Time.deltaTime, Space.Self);
+    }
 }
 
