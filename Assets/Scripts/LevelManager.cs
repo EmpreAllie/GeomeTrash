@@ -111,6 +111,8 @@ public class LevelManager : MonoBehaviour
             levelMusic.Stop();
         }
 
+        LevelProgress.Instance.ForceHundredPercent();
+
         Time.timeScale = 0f;
 
         var player = GameObject.FindGameObjectWithTag("PlayerCube");

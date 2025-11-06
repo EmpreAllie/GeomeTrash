@@ -23,6 +23,12 @@ public class PlayerMovement : MonoBehaviour
 
     public AudioSource levelMusic;
 
+    public enum PlayerMode
+    {
+        CUBE,
+        SHIP
+    }
+
 
     private void Awake()
     {
