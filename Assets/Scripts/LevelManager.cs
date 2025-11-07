@@ -11,6 +11,8 @@ public class LevelManager : MonoBehaviour
 
     public GameObject levelCompleteUI;
 
+    public bool isDead;
+
     private void Awake()
     {
         if (Instance == null)
@@ -27,7 +29,7 @@ public class LevelManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        isDead = false;
     }
 
     // Update is called once per frame
@@ -55,6 +57,8 @@ public class LevelManager : MonoBehaviour
 
     public void PlayerDied(GameObject playerObject, Vector3 deathPos, GameObject deathEffectPrefab)
     {
+        isDead = true;
+
         if (levelMusic != null && levelMusic.isPlaying)
         {
             levelMusic.Stop();
@@ -64,21 +68,26 @@ public class LevelManager : MonoBehaviour
     }
 
     private IEnumerator PlayerDeathRoutine(GameObject playerObject, Vector3 deathPos, GameObject deathEffectPrefab)
-    {        
+    { 
         PlayerMovement pm = playerObject.GetComponent<PlayerMovement>();
         if (pm != null && pm.currentModel != null)
         {
             pm.currentModel.SetActive(false);
         }
 
-        Transform cameraHolder = playerObject.transform.Find("CameraHolder");
-        if (cameraHolder != null)
-            cameraHolder.SetParent(this.transform);
 
         Transform playerCube = playerObject.transform.Find("PlayerCube");
         if (playerCube != null)
             playerCube.gameObject.SetActive(false);
 
+
+
+        /*----------------------------*/
+        /*----------------------------*/
+        /*----------------------------*/
+        Transform cameraHolder = playerObject.transform.Find("CameraHolder");
+        if (cameraHolder != null)
+            cameraHolder.SetParent(this.transform);
 
         //Спавним эффект смерти в позиции: deathPos
         if (deathEffectPrefab != null)
@@ -104,6 +113,7 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        isDead = false;
     }
 
 

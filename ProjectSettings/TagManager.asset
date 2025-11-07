@@ -12,6 +12,7 @@ TagManager:
   - ShipPortal
   - CubePortal
   - BallPortal
+  - PlayerModel
   layers:
   - Default
   - TransparentFX
