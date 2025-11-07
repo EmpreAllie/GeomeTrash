@@ -6,7 +6,8 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance;
 
-    public AudioSource levelMusic;
+    private AudioSource levelMusic;
+    public AudioClip levelMusicClip;
     public AudioClip deathSoundClip;
 
     public GameObject levelCompleteUI;
@@ -30,6 +31,10 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         isDead = false;
+
+        levelMusic = gameObject.AddComponent<AudioSource>();
+        levelMusic.clip = levelMusicClip;
+        levelMusic.Play();
     }
 
     // Update is called once per frame

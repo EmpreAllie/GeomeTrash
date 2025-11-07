@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     public float ballGravityForce = 20f;    // сила "искусственной" гравитации
     public float ballStickThreshold = 0.7f; // dot нормали для прилипания
     public float ballRollFactor = 10f;       // множитель для визуального кручения
-    public float ballRotationsPerSecond = 2f; // 2 полных оборота в секунду
+    public float ballRotationsPerSecond = 1f; // 2 полных оборота в секунду
 
     private Vector3 gravityDirection = Vector3.down;
     private bool gravityInverted = false;
@@ -116,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
         if (LevelManager.Instance.isDead) 
             return;
 
-        transform.position += forwardDirection * forwardSpeed * Time.fixedDeltaTime;
+        transform.position += forwardDirection * forwardSpeed * Time.deltaTime;
 
         if (currentMode == PlayerMode.CUBE)
         {
